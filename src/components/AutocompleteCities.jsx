@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 
-function AutoCompleteCities({ suggestions }) {
+function AutocompleteCity({ suggestions }) {
   const [inputValue, setInputValue] = useState("");
   const [filteredSuggestions, setFilteredSuggestions] = useState([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
@@ -9,57 +9,67 @@ function AutoCompleteCities({ suggestions }) {
     const value = e.target.value;
     setInputValue(value);
 
-    if (value.trim() === "") {
+    if (value.trim() !== "") {
+      const filtered = suggestions.filter((city) =>
+        city.toLowerCase().includes(value.toLowerCase())
+      );
+      setFilteredSuggestions(filtered);
+      setShowSuggestions(true);
+    } else {
       setFilteredSuggestions([]);
       setShowSuggestions(false);
-      return;
     }
-
-    const filtered = suggestions.filter((city) =>
-      city.toLowerCase().includes(value.toLowerCase())
-    );
-
-    setFilteredSuggestions(filtered);
-    setShowSuggestions(true);
   };
 
-  const handleSuggestionClick = (city) => {
+  const handleClick = (city) => {
     setInputValue(city);
+    setFilteredSuggestions([]);
     setShowSuggestions(false);
   };
 
   return (
-    <div style={{ width: "300px", margin: "20px auto" }}>
-      <label htmlFor="city-search" style={{ display: "block", marginBottom: "5px" }}>
-        Search cities of India:
-      </label>
+    <div style={{ position: "relative", width: "250px" }}>
       <input
-        id="city-search"
         type="text"
         value={inputValue}
         onChange={handleChange}
-        style={{ width: "100%", padding: "8px", fontSize: "14px" }}
+        style={{
+          width: "100%",
+          padding: "8px",
+          fontSize: "14px",
+          boxSizing: "border-box",
+        }}
+        placeholder="Type to search..."
       />
+
       {showSuggestions && filteredSuggestions.length > 0 && (
         <ul
           style={{
+            position: "absolute",
+            top: "38px",
+            left: 0,
+            right: 0,
+            border: "1px solid #ccc",
+            background: "#fff",
             listStyleType: "none",
             margin: 0,
-            padding: "5px",
-            border: "1px solid #ccc",
-            borderTop: "none",
+            padding: 0,
             maxHeight: "150px",
             overflowY: "auto",
+            zIndex: 1000,
           }}
         >
           {filteredSuggestions.map((city, index) => (
             <li
               key={index}
+              onClick={() => handleClick(city)}
               style={{
-                padding: "5px",
+                padding: "8px",
                 cursor: "pointer",
+                borderBottom: "1px solid #eee",
               }}
-              onClick={() => handleSuggestionClick(city)}
+              onMouseEnter={(e) => (e.target.style.background = "#f0f0f0")}
+              onMouseLeave={(e) => (e.target.style.background = "#fff")}
             >
               {city}
             </li>
@@ -70,4 +80,4 @@ function AutoCompleteCities({ suggestions }) {
   );
 }
 
-export default AutoCompleteCities;
+export default AutocompleteCity;
